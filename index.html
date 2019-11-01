@@ -1,74 +1,631 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Markdown Editor</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="lib/material-icons.css">
-    <link rel="stylesheet" href="lib/base16-light.css">
-    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="lib/default.css">
-    <link rel="stylesheet" href="lib/github-markdown.css">
-    <link rel="stylesheet" href="lib/spell-checker.min.css">
-    <link rel="stylesheet" href="lib/sweetalert.css">
-    <link rel="stylesheet" href="index.css">
-  </head>
-  <body id="toplevel">
-    <div id="in"><form><textarea id="code"># Markdown Editor</textarea></form></div>
-    <div id="out" class="markdown-body"></div>
-    <div id="menu">
-      <span>Save As</span>
-      <div id="saveas-markdown">
-        <svg height="64" width="64" xmlns="http://www.w3.org/2000/svg">
-          <g transform="scale(0.0625)">
-            <path d="M950.154 192H73.846C33.127 192 0 225.12699999999995 0 265.846v492.308C0 798.875 33.127 832 73.846 832h876.308c40.721 0 73.846-33.125 73.846-73.846V265.846C1024 225.12699999999995 990.875 192 950.154 192zM576 703.875L448 704V512l-96 123.077L256 512v192H128V320h128l96 128 96-128 128-0.125V703.875zM767.091 735.875L608 512h96V320h128v192h96L767.091 735.875z" />
-          </g>
-        </svg>
-        <span>Markdown</span>
-      </div>
-      <div id="saveas-html">
-        <svg height="64" width="64" xmlns="http://www.w3.org/2000/svg">
-          <g transform="scale(0.0625) translate(64,0)">
-            <path d="M608 192l-96 96 224 224L512 736l96 96 288-320L608 192zM288 192L0 512l288 320 96-96L160 512l224-224L288 192z" />
-          </g>
-        </svg>
-        <span>HTML</span>
-      </div>
-      <a id="close-menu">&times;</a>
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>吴永涛的个人简历</title>
+    <meta name="description" content="吴永涛的个人简历">
+    <link rel="shortcut icon" href="favicon.ico">
+    <meta name="author" content="Reese">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="jquery-ui/jquery-ui.min.css">
+    <link href='https://cdn.webfont.youziku.com/webfonts/nomal/99704/19673/58c962adf629d8065c3f5b92.css'
+          rel='stylesheet' type='text/css'/>
+    <style>
+        /*  基础属性 */
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            font-family: "微软雅黑";
+            background: url('./images/banner.jpg');
+            background-position: right;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        body {
+            font-size: 15px;
+            line-height: 1.50;
+            background-color: #ffffff;
+        }
+
+        header {
+            height: 100%;
+        }
+
+        section {
+            background-color: white;
+            padding: 80px 0 80px 0;
+        }
+
+        /*  首屏 */
+        .vague {
+            top: 0;
+            left: 0;
+            background-color: #000000;
+            opacity: 0.5;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+
+        /*  菜单 TODO 记住有个选中问题 */
+        .menu {
+            background: repeat; /* 背景透明 */
+            border: 0; /* 清除线条 */
+            color: white; /* 文字白色 */
+            font-size: 16px;
+        }
+
+        .menu .navbar-brand {
+            font-size: 22px; /* 标题名字更大 */
+        }
+
+        .menu .navbar-brand, .menu .navbar-link, .menu .navbar-nav > li > a {
+            color: white;
+            filter: alpha(opacity=5);
+            -moz-opacity: 0.5; /* Firefox  有效*/
+            opacity: 0.5; /* 通用，其他浏览器  有效*/
+            border: 0;
+        }
+
+        .navbar-default .navbar-toggle .icon-bar {
+            background-color: white;
+        }
+
+        #head form label a, #thx a {
+            color: #333;
+        }
+
+        /*#top p {*/
+        /*margin-right: 0;*/
+        /*}*/
+
+        /*  简介 */
+        #info {
+            padding-top: 18%;
+            background-color: inherit;
+            /*vertical-align: middle;*/
+        }
+
+        #info h3 {
+            text-align: center;
+        }
+
+        #info p, #info h3 {
+            color: #BFBFBE;
+            opacity: 0.8;
+        }
+
+        /* 头像 */
+
+        #head-img {
+            /*position: absolute;*/
+            min-width: 100%;
+            min-height: 100%;
+            /*overflow:hidden;*/
+
+        }
+
+        #head-info {
+            font-size: 25px;
+        }
+
+        #exp .lead + p {
+            font-size: 14px;
+        }
+
+        #exp small {
+            color: #31708f;
+            font-weight: bold;
+        }
+
+        #recently {
+            background: repeat;
+            height: 251px;
+        }
+
+        #map {
+            height: 300px;
+            width: 100%;
+            margin: 0;
+        }
+
+        /*   响应式调整   */
+        @media screen and (max-width: 768px) {
+            body {
+                background-position: left;
+            }
+
+            section {
+                padding: 60px 0 60px 0;
+            }
+
+            dt {
+                padding-left: 3%;
+            }
+
+            dd {
+                padding-left: 16%;
+            }
+
+            #info p, #info h3 {
+                color: #333;
+            }
+
+            #head-info {
+                font-size: 20px;
+            }
+
+            #info {
+                padding-top: 35%;
+            }
+
+            #thx h2 {
+                text-align: center;
+            }
+
+        }
+
+
+/*走马灯开始------------------------------------------------------------*/
+#ZMD{
+
+	font-weight: 600;
+                font-size: 15px;
+                font-family: "黑体";
+                color: #8c888b;/*#70f7fe, #fbd7c6, #fdefac, #bfb5dd, #bed5f5  下面原来的颜色*/
+                /*background: -webkit-linear-gradient(45deg, #70f7fe, #fbd7c6, #fdefac, #bfb5dd, #bed5f5);*/
+                background: -webkit-linear-gradient(45deg, #ffffff,rgb(47, 247, 64), rgb(218, 253, 18), rgb(248, 24, 24), rgba(0, 0, 0, 0),#ffffff,rgb(47, 247, 64),rgb(218, 253, 18),rgb(248, 24, 24),rgba(0, 0, 0, 0),rgb(47, 247, 64));
+                -moz-linear-gradient(45deg, #70f7fe, #fbd7c6, #fdefac, #bfb5dd, #bed5f5);
+                -ms-linear-gradient(45deg, #70f7fe, #fbd7c6, #fdefac, #bfb5dd, #bed5f5);
+                color: transparent;
+                /*设置字体颜色透明*/
+                -webkit-background-clip: text;
+                /*背景裁剪为文本形式*/
+                animation: ran 15s linear infinite;
+                /*动态10s展示*/
+}
+@keyframes ran {
+                from {
+                    backgroud-position: 0 0;
+                }
+                to {
+                    background-position: 2000px 0;
+                }
+            }
+/*走马灯结束------------------------------------------------------------*/
+
+    </style>
+
+</head>
+<body>
+<!--
+  使用响应式导航(3点):
+   按钮设置 data-toggle="collapse"
+           data-targer="#example-navbar-collapse"
+   需要响应折叠的元素设置:
+          class="collapse navbar-collapse" id="example-navbar-collapse"
+-->
+<!--灰色蒙层-->
+<div class="vague"></div>
+<!--灰色蒙层-->
+<header id="top" class="css977d2bf5918578">
+    <nav class="menu navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse"
+                        data-target="#example-navbar-collapse" style="margin-top: 15px">
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Twelve</a>
+            </div>
+            <div class="collapse navbar-collapse" id="example-navbar-collapse">
+                <p class="navbar-right navbar-text" style="color: red">
+                    <!-- <a href="statics/%E7%BD%97%E7%91%9E%E9%9D%92%E7%9A%84%E7%AE%80%E5%8E%86.pdf" class="navbar-link"
+                       target="_blank">WORD版本</a> -->
+                       <a href="statics/吴永涛的简历.docx" class="navbar-link"
+                       target="_blank">WORD版本</a>
+                </p>
+                <ul class="nav navbar-nav">
+                    <li><a href="#head">简介</a></li>
+                    <li><a href="#storage">技术储备</a></li>
+                    <!-- <li><a href="#exp">项目经验</a></li> -->
+                    <li><a href="#work_exp">作品集</a></li>
+                    <li class="hidden-sm"><a href="#evaluate">个人评价</a></li>
+                    <li><a href="#thx">感谢</a></li>
+                    <li><a href="https://github.com/wyt20181119" target="_blank">Github</a></li>
+                    <li><a href="#about">关于</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="info">
+        <div class="section">
+            <div class="col-xs-1 col-lg-2"></div>
+            <div class="col-xs-10 col-lg-8">
+                <div class="container-fluid"></div>
+                <h3 class="visible-xs">个人简介</h3>
+                <h3 class="hidden-xs">你好,欢迎浏览我的个人简历</h3>
+                <p class="lead text-center">相比技术,我可能更喜欢生活，喜欢世界日新月异的变化，喜欢一个人去做喜欢的事情。
+                    <!--GitHub:<a href="https://github.com/luoruiqing" target="_blank">https://github.com/luoruiqing</a>-->
+                </p>
+            </div>
+            <div class="col-xs-1 col-lg-2"></div>
+        </div>
+    </section>
+</header>
+<section id="head" class="css977d2bf5918578">
+    <div class="container">
+
+        <div class="col-xs-12 col-sm-4">
+            <div id="head-img" class="col-xs-6 col-md-3">
+                <a href="#" class="thumbnail">
+                    <img src="images/me.jpg" alt="824*824">
+                </a>
+            </div>
+        </div>
+        <div id="head-info" class="col-xs-12  col-sm-8">
+            <form>
+
+                <div class="form-group">
+                    <label>吴永涛&nbsp;</label>
+
+                </div>
+                求职意向&nbsp:<label id="JavaKF" style="color: rgb(73, 145, 185);">&nbsp&nbsp Java开发工程师</label>
+                <br>
+                手&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp机&nbsp:&nbsp&nbsp<label></span>
+                    <span id=tel" >17756733272</span>
+                </label><br>
+                现&nbsp&nbsp居&nbsp&nbsp地&nbsp：
+                    <a id=tel" href="https://www.amap.com/search?query=%E6%97%A5%E7%85%A7%E5%B8%82&city=371102&geoobj=119.364391%7C35.362119%7C119.667888%7C35.500592&zoom=12">山东日照</a>
+                <br>
+                教育经历：<p>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 2017.09 		        就读于山东省日照职业技术学院 
+                &nbsp&nbsp&nbsp&nbsp计算机网络<br>&nbsp&nbsp&nbsp&nbsp&nbsp专
+                业，将于2020年07月毕业；&nbsp&nbsp&nbsp&nbsp&nbsp</p>
+                <!-- <div style="height: 20px"></div> -->
+                主修课程：<div style="font-size: 18px;" id="haha">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp 
+                <strong> JavaEE企业级应用开发、MySQL数据库管理与应用、Linux系统应用、HTML5静<br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp态网页设计、JavaScript前端开发案例、平面设计基础、计算机网络基础、网络安全、<br>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp数据通信。</strong>&nbsp&nbsp&nbsp&nbsp&nbsp</div>
+                <div style="height: 90px"></div>
+                <blockquote class="visible-xs-block">
+                    <p>眼光胸怀和实力</p>
+                    <footer class="text-right">安心做个<cite title="Source Title">程序○</cite></footer>
+                </blockquote>
+
+            </form>
+        </div>
+        <div id="head-info-motto" class="col-sm-12">
+            <blockquote class="hidden-xs">
+                <p>一个人的工作职位不怕低，只要你不放弃你的理想，拿目前的工作做一个踏脚石，一方面维持生活，一方面找时间充实自己，认准一个确定的方向去努力。慢慢的，你总会发现，你的努力没有白费。</p>
+                <footer class="text-right">安心做个<cite title="Source Title">程序○</cite></footer>
+            </blockquote>
+        </div>
     </div>
-    <div id="navbar">
-      <div id="navcontent">
-        <a id="logo" href = "https://github.com/jbt/markdown-editor" tooltip = "Check out the code on Github!">
-          <p id="title" class="left"># Markdown Editor</p>
+</section>
+<section id="recently"></section>
+<section id="storage">
+    <div class="container">
+        <h3>技术储备</h3>
+        <div class="row">
+            <div class="col-sm-6">
+                <dl class="dl-horizontal">
+                    <dt>项目管理</dt>
+                    <dd>Git</dd>
+                    <dd>Maven</dd>
+                    <br>
+                    <!-- <dt>消息交换协议</dt>
+                    <dd>JSON</dd>
+                    <dd>XML</dd>
+                    <br> -->
+                    <dt>系统服务</dt>
+                    <dd>Linux</dd>
+                    <dd>Tomcat</dd>
+                    <br>
+                    
+                    <dt>IDE/工具</dt>
+                    <dd>IntelliJ IDEA</dd>
+                    <dd>Navicat Premium</dd>
+                    <dd>Power Designer</dd>
+                    
+                    <br>
+                    <dt>其他</dt>
+                    <dd>PhotoShop</dd>
+                    <dd>亿图</dd>
+                    <!-- <dd>SQLAlchemy</dd>
+                    <dd>PIL</dd>
+                    <dd>PYQT</dd>
+                    <dd>Selenium</dd>
+                    <dd>Proxy/FTP server</dd> -->
+                </dl>
+            </div>
+            <div class="col-sm-6">
+                <dl class="dl-horizontal">
+                    <!-- <dt>数据库/缓存/队列</dt> -->
+                    <dt>数据库</dt>
+                    <dd>MySQL</dd>
+                    <!-- <dd>Mongodb</dd>
+                    <dd>Redis/Memcache</dd>
+                    <dd>RabbitMQ</dd> -->
+                    <br>
+                    <dt>Java框架</dt>
+                    <dd>Spring</dd>
+                    <dd>SpringMVC</dd>
+                    <dd>MyBatis</dd>
+                    <br>
+                    
+                    
+                    
+                    <dt>WEB前端/框架</dt>
+                    <dd>HTML/CSS/JavaScript</dd>
+                    <dd>Jquery</dd>
+                    <dd>Bootstrap</dd>
+                    <dd>AJAX/JSONP</dd>
+                    <br>
+                    <!-- <dd>AngularJS</dd>
+                    <dd>Vue</dd>
+                    <dd>AJAX/JSONP</dd>
+                    <dd>EChars</dd> -->
+                    <!-- <dt>测试工具</dt>
+                    <dd>CProfile</dd>
+                    <dd>Pstats</dd>
+                    <dd>Dis</dd>
+                    <dd>Unittest</dd>
+                    <dd>Timeit</dd>
+                    <dd>linux-AD</dd> -->
+                    <dt>Java网络爬虫</dt>
+                    <dd>HttpClient</dd>
+                    <dd>Jsoup</dd>
+                    <br>
+                    <dt>自动化测试</dt>
+                    <dd>Selenium</dd>
+                    <br>
+                </dl>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="work_exp">
+    <div class="container">
+        <h3 style="margin-bottom: 30px;">作品集</h3>
+        <blockquote>
+            <a href="https://github.com/wyt20181119/MyBlogDemo" target="_blank" class="text-nowrap">
+                <h4><strong>博客系统</strong>
+                    <small class="text-right">2019年10月14日 ~ 2019年10月25日</small>
+                </h4>
+            </a>
+            <p class="lead">技术框架: Spring+SpringMVC+Mybatis+JSP</p>
+            <p class="lead">责任描述: <strong>独立完成整个系统的开发</strong></p>
+            <h5>项目描述</h5>
+            <ul class="list-unstyled">
+                <li>
+                    <small>制定博客系统的开发计划，完成博客系统的数据库设计；</small>
+                </li>
+                <li>
+                    <small>该系统具备常见博客的基本功能，例如：发博客，删除博客，修改博客，查询博客，对博客进行评论，删除博客等基本功能；</small>
+                </li>
+            </ul>
+        </blockquote>
+        <blockquote>
+            <a href="https://gitee.com/gaozhiqiang826/orderSSM" target="_blank" class="text-nowrap">
+                <h4><strong>餐厅点餐系统</strong>
+                    <small class="text-right">2019年10月20日 ~ 正在开发中</small>
+                </h4>
+            </a>
+            <p class="lead">技术框架: Spring+SpringMVC+Mybatis+JSP</p>
+            <p class="lead">责任描述: <strong>主要参与后台逻辑代码的实现</strong></p>
+            <h5>工作内容</h5>
+            <ul class="list-unstyled">
+                <li>
+                    <small>负责后台管理页面中餐桌表的增加，删除，搜索，查询，菜系表，菜品表的增加，删除，更新，以及餐厅订单中的结账等功能；</small>
+                </li>
+                <li>
+                    <small>负责前台管理页面中查询菜单，订餐，结算等功能的实现。</small>
+                </li>
+            </ul>
+        </blockquote>
+        <blockquote>
+            <a href="https://github.com/wyt20181119/rebot" target="_blank" class="text-nowrap">
+                <h4><strong>QQ机器人</strong>
+                    <small class="text-right">2019年10月20日 ~ 正在开发中</small>
+                </h4>
+            </a>
+            <p class="lead">技术框架: 酷qAir+Selenium+QQ号</p>
+            <p class="lead">责任描述: <strong>独自开发</strong></p>
+            <h5>工作内容</h5>
+            <ul class="list-unstyled">
+                <li>
+                    <small>用户可以通过私聊或者在群聊中发送需要vip才能下载的一些资源，通过这个自动化系统帮助用户代下载，实现24小时在线帮下载的功能；</small>
+                </li>
+                <li>
+                    <small>控制机器人的管理员或者群主通过命令发送给用户进行充值下载次数（向数据库中添加次数），当用户没有下载次数的时候，机器人会提醒用户需要找管理员或者群主充值后方可下载。</small>
+                </li>
+            </ul>
+        </blockquote>
+    </div>
+</section>
+<!--116.388682,40.105803-->
+<section id="evaluate">
+    <div class="container">
+        <h3 style="margin-bottom: 25px;">个人评价</h3>
+        <div class="panel-body">
+            &nbsp;&nbsp;&nbsp;&nbsp;有良好的编码风格、团队合作能力。
+            求知欲强烈，热爱技术，喜欢新技术，喜欢code review。
+            本人性格热情开朗，待人友好，为人诚实谦虚。工作勤奋，认真负责，能吃苦耐劳，尽职尽责，有耐心。具有亲和力，平易近人，善于与人沟通。
+            <footer class="text-right">就一<cite title="Source Title">臭写代码</cite>的</footer>
+        </div>
+    </div>
+</section>
+<section>
+    <div class="container-fluid">
+        <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86
+                src="//music.163.com/outchain/player?type=2&id=29562295&auto=0&height=66" style="width: 100%"></iframe>
+    </div>
+</section>
+
+<section id="thx" class="css977d2bf5918578">
+    <div class="container">
+        <h2>特别感谢</h2>
+        <div style="margin-left: 5%">
+            <p class="lead"><strong><a href="https://pages.github.com/" target="_blank">Github</a></strong>
+                提供免费的简历网站存储和网络访问。</p>
+            <p class="lead"><strong><a href="#" target="_blank">将来的公司</a></strong> 给我一个展示自我的机会。</p>
+            <!-- <p class="lead"><strong>父母</strong> 养育之恩，<strong>女朋友</strong>的相守陪伴。</p> -->
+            <p class="lead"><strong>父母</strong> 养育之恩，<strong>亲朋好友</strong>每天的关心。</p>
+            <p class="lead"><strong>关心我的人</strong>的鼓励支持与教导。</p>
+        </div>
+    </div>
+</section>
+<section>
+    <div style="height: 1px"></div>
+</section>
+<section>
+    <div id="container">
+        <div id="map" tabindex="0"></div>
+    </div>
+</section>
+
+<section id="storage" style="background-color:#4c91b8">
+    <div class="container">
+        <h3>社交网络</h3>
+        <div class="row">
+            <div class="col-sm-6">
+                <dl class="dl-horizontal">
+
+                    <br>
+                    <dt>邮箱：</dt>
+                    <dd>3072288900@qq.com</dd>
+                    <br>
+                    <dt>知乎：</dt>
+                    <dd>@是十二丫</dd>
+                    <br>
+                    <dt>微博：</dt>
+                    <dd>@HappyJava</dd>
+                    <br>
+                    <dt>GitHub：</dt>
+                    <dd>@wyt20181119</dd>
+                    <br>
+                    <dt>公众号：</dt>
+                    <dd>@HeyJava</dd>
+                    <br>
+                </dl>
+                <h3>本站声明</h3>
+                	<div id="ZMD">&nbsp&nbsp&nbsp&nbsp本站设计、交互、编码来源于网络，如果本站有侵犯您权益的行为，请来信或留言告诉我,我会尽快做出处理!<a href="">本站代码</a>和<a href="https://github.com/luoruiqing/luoruiqing.github.io">
+                源代码</a>已经公开在 github 上面。</div>
+            </div>
+            <div class="col-sm-6">
+                <dl class="dl-horizontal">
+                    &nbsp&nbsp&nbsp&nbsp&nbsp
+                    &nbsp&nbsp&nbsp&nbsp&nbsp
+                    &nbsp&nbsp&nbsp&nbsp&nbsp
+                    &nbsp&nbsp&nbsp&nbsp&nbsp
+                    &nbsp&nbsp&nbsp&nbsp&nbsp
+                    <img src="images/qrcode_for_gh_fcf24b3969ee_258.jpg" style="width: 160px ;height:160px">
+                    &nbsp&nbsp&nbsp&nbsp&nbsp
+                    <img src="images/99DBF9CC22BE7C59229893AA1C12BFDF.jpg" style="width: 160px;height: 160px">
+                </dl>
+                <br><br>
+                <dl style="text-align: center;" id="ZMD">
+					<dd><p><span style="color: red">灵感</span>&nbsp<span style="color:yellow">代码</span>&nbsp<span style="color:rgb(131, 200, 0);">梦想</span>&nbsp<span style="color: rgb(244, 118, 73);">未来</span></p></dd>
+					<dd>注重效率，偏爱敏捷开发</dd>
+					<dd>喜欢尝试，期待新鲜事务</dd>
+					<dd>技术即兴趣，兴趣即未来</dd>
+					<dd>行路有良友，便是捷径</dd>
+					<dd>带上我吧，一起看到更大的世界</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="return text-center" style="padding: 0;background-color: #7D7D7B;">
+    <div class="container-fluid">
+        <a href="#top" style="height: 0;font-size: 0">
+            <div>
+                &nbsp;&nbsp;回到顶部&nbsp;&nbsp;
+                <button style="width: 100%;background:repeat;border: 0;color: #B6B6B5">
+                <!---->
+                </button>
+            </div>
         </a>
-        <p id="openbutton" title="Open from Disk" class="navbutton left" onclick="document.getElementById('fileInput').click();"><i class="material-icons">open_in_browser</i></p>
-        <input id="fileInput" type="file" class="hidden" accept=".md,.mdown,.txt,.markdown"/>
-        <p id="savebutton" title="Download" class="navbutton left" onclick="showMenu()"><i class="material-icons">file_download</i></p>
-        <p id="browsersavebutton" title="Browser Save(Experimental)" class="navbutton left" onclick="saveInBrowser()"><i class="material-icons">save</i></p>
-        <p id="sharebutton" title="Generate Shareable Link" class="navbutton left" onclick="updateHash()"><i class="material-icons">share</i></p>
-        <p id="nightbutton" title="Night Mode" class="navbutton left" onclick="toggleNightMode(this)"><i class="material-icons">invert_colors</i></p>
-        <p id="readbutton" title="Reading Mode" class="navbutton left" onclick="toggleReadMode(this)"><i class="material-icons">chrome_reader_mode</i></p>
-        <p id="spellbutton" title="Spell Check" class="navbutton left selected" onclick="toggleSpellCheck(this)"><i class="material-icons">spellcheck</i></p>
-        <p id="newbutton" class="navbutton left hidden" onclick="clearEditor()">Clear</p>
-        <p id="sharebutton" class="navbutton left selected hidden">Share</p>
-      </div>
     </div>
-    <script src="lib/markdown-it.js"></script>
-    <script src="lib/markdown-it-footnote.js"></script>
-    <script src="lib/highlight.pack.js"></script>
-    <script src="lib/emojify.js"></script>
-    <script src="codemirror/lib/codemirror.js"></script>
-    <script src="codemirror/overlay.js"></script>
-    <script src="codemirror/xml/xml.js"></script>
-    <script src="codemirror/markdown/markdown.js"></script>
-    <script src="codemirror/gfm/gfm.js"></script>
-    <script src="codemirror/javascript/javascript.js"></script>
-    <script src="codemirror/css/css.js"></script>
-    <script src="codemirror/htmlmixed/htmlmixed.js"></script>
-    <script src="codemirror/lib/util/continuelist.js"></script>
-    <script src="lib/spell-checker.min.js"></script>
-    <script src="lib/rawinflate.js"></script>
-    <script src="lib/rawdeflate.js"></script>
-    <script src = "lib/sweetalert.min.js"></script>
-    <script src="index.js"></script>
-  </body>
+</section>
+</body>
+<script type="application/javascript" src="bootstrap/js/jquery/jquery.min.js"></script>
+<script type="application/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+<script src="https://webapi.amap.com/maps?v=1.3&key=a314413f17bbb82dab605a9af72d8c64"></script>
+<!--116.38902,40.106348 坐标-->
+<script type="text/javascript">
+    $.support.transition = true;
+    $("#top ul a").click(function () {
+        $('.collapse-toggle').dropdown();
+        $("html, body").animate({
+            scrollTop: $($(this).attr("href")).offset().top + "px"
+        }, {
+            duration: 500,
+            easing: "swing"
+        });
+        return false;
+    });
+    console.log($(document).height() - $(window).height());
+    $(window).scroll(function () {
+        if ($(document).scrollTop() >= $(document).height() - $(window).height()) {
+
+//            $(".return a:eq(0)").animate({
+//                "fontSize": "16px"
+//            });
+//            $(".return").removeClass("hidden");
+//            $(".return").animate({
+//
+//            })
+        }
+        else {
+//            $(".return a:eq(0)").animate({
+//                "fontSize": "0"
+//            });
+        }
+    });
+    $(document).ready(function () {
+//        页面加载完成后加载高德地图
+        var map = new AMap.Map('container', {
+            zoom: 10,
+            center: [116.38902, 40.106348]
+        });
+        var marker = new AMap.Marker({
+            position: [119.531698, 35.457802],//marker所在的位置
+            map: map
+        });
+        AMap.plugin(['AMap.ToolBar', 'AMap.Scale', 'AMap.Geolocation'],
+                function () {
+                    geolocation = new AMap.Geolocation({
+                        enableHighAccuracy: true,//是否使用高精度定位，默认:true
+                        timeout: 10000,          //超过10秒后停止定位，默认：无穷大
+                        maximumAge: 0,           //定位结果缓存0毫秒，默认：0
+                        convert: true,           //自动偏移坐标，偏移后的坐标为高德坐标，默认：true
+                        showButton: true,        //显示定位按钮，默认：true
+                        buttonPosition: 'RT',    //定位按钮停靠位置，默认：'LB'，左下角
+                        buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+                        showMarker: true,        //定位成功后在定位到的位置显示点标记，默认：true
+                        showCircle: true,        //定位成功后用圆圈表示定位精度范围，默认：true
+                        panToLocation: true,     //定位成功后将定位到的位置作为地图中心点，默认：true
+                        zoomToAccuracy: false      //定位成功后调整地图视野范围使定位位置及精度范围视野内可见，默认：false
+                    });
+                    map.addControl(new AMap.ToolBar());
+                    map.addControl(new AMap.Scale());
+                    map.addControl(geolocation);
+                    AMap.event.addListener(geolocation, 'complete', onComplete);//返回定位信息
+                    AMap.event.addListener(geolocation, 'error', onError);      //返回定位出错信息
+                });
+        marker.setMap(map);
+    })
+
+</script>
+<script>
+document.oncontextmenu=function(){return false}//屏蔽右键菜单
+document.onpaste=function(){return false}//屏蔽粘贴
+document.oncopy=function(){return false}//屏蔽复制
+document.oncut=function(){return false}//屏蔽剪切
+document.onselectstart=function(){return false}//屏蔽选择
+</script>
 </html>
